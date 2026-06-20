@@ -132,7 +132,7 @@ export default function HealthDataTimeMachine() {
               category: "consent",
               title: "Sovereign Ledger Genesis Initialization",
               description: "Cryptographic health identity established. Sovereign private keys linked with client-side Zero-Knowledge wallets.",
-              facility: "Vortexa Network Registry",
+              facility: "Vital Twin Network Registry",
               efficiencyScore: 100
             }
           ] as HistoricalMilestone[]

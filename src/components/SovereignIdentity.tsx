@@ -25,7 +25,7 @@ export default function SovereignIdentity({
   const [copiedDoc, setCopiedDoc] = useState(false);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
     "SYS_BOOT: Sovereign Identity Decentralized Network protocol active.",
-    "IDENTITY: did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2 loaded.",
+    "IDENTITY: did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2 loaded.",
     "STATUS: Verification signature valid. Cryptographic seeds synced."
   ]);
 
@@ -51,7 +51,7 @@ export default function SovereignIdentity({
     addLog(`CLAIM_VTX: Staking allocation rewards detected. Compiling zero-knowledge claim proof...`);
     
     await new Promise((r) => setTimeout(r, 500));
-    addLog(`SENDING: Submitting cryptographic claim digest to Vortexa Core Node...`);
+    addLog(`SENDING: Submitting cryptographic claim digest to Vital Twin Core Node...`);
     
     await onClaimTokens();
     setClaiming(false);

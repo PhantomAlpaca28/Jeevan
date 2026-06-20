@@ -43,7 +43,7 @@ interface FormPrescription {
 
 export default function DoctorDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedPatientDid, setSelectedPatientDid] = useState("did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2");
+  const [selectedPatientDid, setSelectedPatientDid] = useState("did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2");
   
   // Custom generated prescription list
   const [generatedPrescription, setGeneratedPrescription] = useState<FormPrescription | null>(null);
@@ -58,7 +58,7 @@ export default function DoctorDashboard() {
   const [patientsList, setPatientsList] = useState<PatientNode[]>([
     {
       name: "Sovereign Patient (Hyperbrother)",
-      did: "did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2",
+      did: "did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2",
       age: 29,
       lastCoherence: "99.2% Nominal Stability",
       status: "AUTHORIZED",
@@ -66,7 +66,7 @@ export default function DoctorDashboard() {
     },
     {
       name: "Patient Node 2 (Elena Rostova)",
-      did: "did:vortexa:ipns:0ab0e39c71bc9d8fddb9a527",
+      did: "did:vitaltwin:ipns:0ab0e39c71bc9d8fddb9a527",
       age: 34,
       lastCoherence: "94.6% Stable",
       status: "AUTHORIZED",
@@ -74,7 +74,7 @@ export default function DoctorDashboard() {
     },
     {
       name: "Patient Node 3 (Arthur Vance)",
-      did: "did:vortexa:ipns:df21ebc87c9f8090bdc92da1",
+      did: "did:vitaltwin:ipns:df21ebc87c9f8090bdc92da1",
       age: 61,
       lastCoherence: "88.1% Core Coherence",
       status: "PENDING_VERIFICATION",
@@ -82,7 +82,7 @@ export default function DoctorDashboard() {
     },
     {
       name: "Patient Node 4 (Cassandra Sterling)",
-      did: "did:vortexa:ipns:fe2a3f0dcba918ea8e24c7",
+      did: "did:vitaltwin:ipns:fe2a3f0dcba918ea8e24c7",
       age: 42,
       lastCoherence: "Revoked Sovereign Consent",
       status: "REVOKED",

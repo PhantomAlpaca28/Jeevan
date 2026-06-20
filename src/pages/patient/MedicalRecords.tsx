@@ -114,7 +114,7 @@ export default function MedicalRecords() {
       doctorName: "Self-Sovereign Node ID",
       facility: "Ipfs Encrypted Client Space",
       summary: "Patient uploaded sovereign asset securely sealed using local wallet keys. Multi-hop ledger hashes verified on client.",
-      details: `Raw local asset successfully indexed. SHA-256 Node: did:vortexa:${Math.random().toString(36).substring(2, 20)}. Full end-to-end cryptographic integrity confirmed by digital token validation keys. Size: ${fileSize}.`,
+      details: `Raw local asset successfully indexed. SHA-256 Node: did:vitaltwin:${Math.random().toString(36).substring(2, 20)}. Full end-to-end cryptographic integrity confirmed by digital token validation keys. Size: ${fileSize}.`,
       fileSize: fileSize || "1.2 MB",
     });
 

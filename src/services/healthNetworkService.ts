@@ -22,7 +22,7 @@ function generateMockHash(): string {
 }
 
 const INITIAL_CREDENTIALS: SovereignCredential = {
-  did: "did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2",
+  did: "did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2",
   publicKey: "04:6cf7:1e9a:cdb1:7245:bf8a:29d3:0f91:8e57:9982:1c67:e2a8:440c:5601:9bb4:aa20",
   privateKeyWIF: "vx_prv_key_9fca883e002de45b88c7f920da781e6992dca21817bbbf0a",
   signingAlgorithm: "Ed25519",
@@ -35,7 +35,7 @@ const INITIAL_RECORDS: MedicalDiagnosticRecord[] = [
   {
     id: "rec-gen-001",
     timestamp: "2026-06-18 14:32:01",
-    originNode: "Vortexa Neural Sequencing Lab Node 4",
+    originNode: "Vital Twin Neural Sequencing Lab Node 4",
     category: "GENOMIC",
     diagnosticSummary: "Epi-genomic micro-metabolism profile synthesized successfully.",
     clinicalNarrative: "DNA methylation analysis reveals high adaptive capacity for high-density neural sequencing tasks. Elevated markers on chromosome 7 indicate moderate antioxidant resistance; prescription recommending omega-3 phospholipid lipid replacement protocol.",
@@ -71,7 +71,7 @@ const INITIAL_RECORDS: MedicalDiagnosticRecord[] = [
 const INITIAL_CONSENTS: ConsentPermission[] = [
   {
     id: "con-001",
-    entityName: "VORTEXA Medical Diagnostic Agent V4 (AI)",
+    entityName: "VITAL TWIN Medical Diagnostic Agent V4 (AI)",
     entityType: "AI_DIAGNOSTIC_AGENT",
     scope: "FULL_OMNI_ACCESS",
     expiresAt: "2500-01-01 00:00:00",

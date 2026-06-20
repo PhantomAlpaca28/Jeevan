@@ -35,7 +35,7 @@ export default function AIGuardian() {
     {
       id: "m_001",
       sender: "guardian",
-      text: "VORTEXA_GUARDIAN_BOT: Active diagnostic surveillance channel online. Send any medical data request link, or ask me about privacy risks regarding genomic data sharing.",
+      text: "VITAL_TWIN_GUARDIAN_BOT: Active diagnostic surveillance channel online. Send any medical data request link, or ask me about privacy risks regarding genomic data sharing.",
       timestamp: "Just now"
     }
   ]);

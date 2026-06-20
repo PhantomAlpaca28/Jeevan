@@ -185,7 +185,7 @@ export default function App() {
             <Network className="absolute inset-0 m-auto w-6 h-6 text-neon-cyan animate-pulse" />
           </div>
           <div>
-            <h2 className="font-display font-black text-xl tracking-widest text-white leading-tight">VORTEXA SECURE</h2>
+            <h2 className="font-display font-black text-xl tracking-widest text-white leading-tight">VITAL TWIN SECURE</h2>
             <p className="text-[10px] text-neon-cyan font-bold tracking-widest mt-1">ESTABLISHING INTEGRITY_NODE</p>
           </div>
           <p className="text-xs text-slate-400 font-sans leading-relaxed">
@@ -216,38 +216,32 @@ export default function App() {
       {/* Primary Workspace Tab Switchers based on active nav selection */}
       <div className="flex flex-col gap-6">
         {/* Dynamic Workspace Utilities Header with Quick Ledger sync */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900 pb-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse" />
-              <span className="font-mono text-[9px] text-slate-500 uppercase tracking-widest">WORKSPACE_NODE_ONLINE</span>
-            </div>
-            <h1 className="font-display font-black text-2xl text-white tracking-tight mt-1">
-              {activeTab === "vitals" && "Coherence Intelligence Suite"}
-              {activeTab === "records" && "Sovereign Clinical Records"}
-              {activeTab === "doctor-board" && "Clinical Governance Hub"}
-              {activeTab === "pharmacist-board" && "Pharmaceutical Verification Center"}
-              {activeTab === "fraud-detection" && "Sovereign Cybersecurity Ops Panel"}
-              {activeTab === "identity" && "Patient Cryptographic Identity"}
-              {activeTab === "consent" && "Consent Permission Ledger"}
-              {activeTab === "ai-guardian" && "Sovereign AI Security Guardian"}
-              {activeTab === "data-will" && "Healthcare Data & Legacy Will"}
-              {activeTab === "time-machine" && "Health Data Temporal Scrubbing"}
-              {activeTab === "audit-timeline" && "Cryptographic Sovereign Audit Ledger"}
-              {activeTab === "emergency-gate" && "Break Glass Emergency Overrides"}
-              {activeTab === "ledger" && "Decentralized Diagnostic Ledger"}
-            </h1>
+        <div className="flex items-center justify-between gap-4 border-b border-slate-900/40 pb-4">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-mono text-[9.5px] uppercase tracking-wider text-slate-400 font-bold">
+              {activeTab === "vitals" && "Sovereign Dashboard Node"}
+              {activeTab === "records" && "Sovereign records Node"}
+              {activeTab === "doctor-board" && "Clinician Node"}
+              {activeTab === "pharmacist-board" && "Pharmacist Prescriptions Node"}
+              {activeTab === "fraud-detection" && "Cyber Security Fraud Node"}
+              {activeTab === "ai-guardian" && "Sovereign AI Node"}
+              {activeTab === "ledger" && "Decentralized Ledger Node"}
+              {activeTab === "consent" && "Consent Ledger Node"}
+              {activeTab === "emergency-gate" && "Emergency Access Overrides"}
+              {activeTab === "time-machine" && "Temporal Intelligence Node"}
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-950 px-3.5 py-2 rounded-xl border border-slate-900 self-start sm:self-center">
-            <div className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'CONNECTED' ? 'bg-neon-green' : 'bg-neon-cyan animate-spin'}`} />
-            <span className="text-[9px] font-mono text-slate-400">LEDGER: {syncStatus}</span>
+          <div className="flex items-center gap-2 bg-[#05111d] px-3 py-1.5 rounded-lg border border-slate-900 leading-none">
+            <div className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'CONNECTED' ? 'bg-emerald-400' : 'bg-emerald-400 animate-spin'}`} />
+            <span className="text-[8.5px] font-mono text-slate-400 tracking-wider font-bold">SYNC: {syncStatus}</span>
             <button
               id="dash-sync-btn"
               onClick={refreshLedger}
-              className="p-1 hover:bg-slate-900 rounded text-slate-500 hover:text-white transition-all ml-1.5"
+              className="p-0.5 hover:bg-slate-900 rounded text-slate-500 hover:text-white transition-all ml-1"
             >
-              <RefreshCw className={`w-3 h-3 ${syncStatus === 'SYNCING' ? 'animate-spin text-neon-cyan' : ""}`} />
+              <RefreshCw className={`w-3 h-3 ${syncStatus === 'SYNCING' ? 'animate-spin text-emerald-400' : ""}`} />
             </button>
           </div>
         </div>

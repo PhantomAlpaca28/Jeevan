@@ -41,12 +41,12 @@ const INITIAL_PRESCRIPTIONS: MockPrescription[] = [
   {
     id: "PX-9011",
     patientName: "Alexander Vance",
-    patientDid: "did:vortexa:ipns:3c0d8f7ea3321bcc8dca101",
+    patientDid: "did:vitaltwin:ipns:3c0d8f7ea3321bcc8dca101",
     medicationName: "Gamma-Synaptic Calibrant Complex",
     dosage: "50mg - 1 capsule during peak circadian wave",
     refillsLeft: 3,
     prescribingDoctor: "Dr. Michael Stone",
-    doctorDid: "did:vortexa:operator:doc_9031ef09cda81",
+    doctorDid: "did:vitaltwin:operator:doc_9031ef09cda81",
     consentGrantToken: "consent:token:auth:93be2a7de30",
     status: "PENDING",
     dateSigned: "June 18, 2026"
@@ -54,12 +54,12 @@ const INITIAL_PRESCRIPTIONS: MockPrescription[] = [
   {
     id: "PX-8824",
     patientName: "Elena Rostova",
-    patientDid: "did:vortexa:ipns:a4110ee8fbd331a90c1122bef4",
+    patientDid: "did:vitaltwin:ipns:a4110ee8fbd331a90c1122bef4",
     medicationName: "Autonomic Autoregulation Serum Delta",
     dosage: "10ml - nebulized before sleep sequence",
     refillsLeft: 1,
     prescribingDoctor: "Dr. Clara Wu",
-    doctorDid: "did:vortexa:operator:doc_811dfbc33c8ef",
+    doctorDid: "did:vitaltwin:operator:doc_811dfbc33c8ef",
     consentGrantToken: "consent:token:auth:7ebd09bcde1",
     status: "PENDING",
     dateSigned: "June 19, 2026"
@@ -67,12 +67,12 @@ const INITIAL_PRESCRIPTIONS: MockPrescription[] = [
   {
     id: "PX-7411",
     patientName: "Marcus Thorne",
-    patientDid: "did:vortexa:ipns:5faabcdc9031ef113bdcaed21a",
+    patientDid: "did:vitaltwin:ipns:5faabcdc9031ef113bdcaed21a",
     medicationName: "Neuro-Peptide Resiliency Blockers",
     dosage: "200mcg oral sublingual - daily",
     refillsLeft: 0,
     prescribingDoctor: "Dr. Michael Stone",
-    doctorDid: "did:vortexa:operator:doc_9031ef09cda81",
+    doctorDid: "did:vitaltwin:operator:doc_9031ef09cda81",
     consentGrantToken: "consent:token:auth:11cbeeaed89",
     status: "DISPENSED",
     dateSigned: "June 10, 2026"

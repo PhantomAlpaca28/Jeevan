@@ -3,315 +3,127 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { Activity, ShieldAlert, Cpu } from "lucide-react";
+import { useState } from "react";
+import { ShieldCheck, Cpu, Activity, User, Heart, Compass, CheckCircle } from "lucide-react";
+
+// Import the generated premium 3D digital human body model asset
+// @ts-ignore
+import twinModelImg from "../assets/images/3d_digital_twin_body_1781988014271.jpg";
 
 interface SovereignNode3DProps {
-  neuralHz: number;
-  heartRate: number;
+  neuralHz?: number;
+  heartRate?: number;
 }
 
-export default function SovereignNode3D({ neuralHz, heartRate }: SovereignNode3DProps) {
-  const mountRef = useRef<HTMLDivElement>(null);
-  const [webglError, setWebglError] = useState(false);
-  const [activeMode, setActiveMode] = useState<"GENOMICS" | "NEURAL" | "LEDGER">("NEURAL");
+export default function SovereignNode3D({ neuralHz = 40, heartRate = 72 }: SovereignNode3DProps) {
+  const [selectedSystem, setSelectedSystem] = useState<string | null>(null);
 
-  // Store telemetry variables in ref so Three.js render loop can read them in real-time
-  const telemetryRef = useRef({ neuralHz, heartRate });
-  
-  useEffect(() => {
-    telemetryRef.current = { neuralHz, heartRate };
-  }, [neuralHz, heartRate]);
-
-  useEffect(() => {
-    if (!mountRef.current) return;
-
-    // Dimensions
-    const width = mountRef.current.clientWidth || 400;
-    const height = mountRef.current.clientHeight || 400;
-
-    // Scene, Camera, Renderer
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x020617, 0.015);
-
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    camera.position.z = 25;
-
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    } catch (e) {
-      console.error("WebGL initialization failed", e);
-      setWebglError(true);
-      return;
-    }
-
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mountRef.current.appendChild(renderer.domElement);
-
-    // Create Holographic Particle Genome Sphere
-    const particleCount = 200;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
-
-    const color1 = new THREE.Color(0x00f0ff); // Neon Cyan
-    const color2 = new THREE.Color(0x0088ff); // Deep Blue
-    const color3 = new THREE.Color(0xbd00ff); // Purple
-
-    for (let i = 0; i < particleCount; i++) {
-      // Spherical distribution
-      const u = Math.random();
-      const v = Math.random();
-      const theta = u * 2.0 * Math.PI;
-      const phi = Math.acos(2.0 * v - 1.0);
-      const r = 5.5 + Math.random() * 0.8; // Radius
-
-      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = r * Math.cos(phi);
-
-      // Interpolate colors for futuristic neon genomic look
-      const t = Math.random();
-      let mixedColor = color1.clone();
-      if (t < 0.4) {
-        mixedColor.lerp(color2, t * 2.5);
-      } else {
-        mixedColor.lerp(color3, (t - 0.4) * 1.6);
-      }
-
-      colors[i * 3] = mixedColor.r;
-      colors[i * 3 + 1] = mixedColor.g;
-      colors[i * 3 + 2] = mixedColor.b;
-
-      sizes[i] = 1.0 + Math.random() * 2.5;
-    }
-
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-
-    // Custom shader-like materials for glowing square stars
-    const particleMaterial = new THREE.PointsMaterial({
-      size: 0.35,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending,
-    });
-
-    const particleSystem = new THREE.Points(geometry, particleMaterial);
-    scene.add(particleSystem);
-
-    // Inner Core Orb (Glowing Wireframe Sphere)
-    const coreGeometry = new THREE.SphereGeometry(3.2, 16, 16);
-    const coreMaterial = new THREE.MeshBasicMaterial({
-      color: 0x00f0ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.12,
-      blending: THREE.AdditiveBlending
-    });
-    const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
-    scene.add(coreMesh);
-
-    // Quantum Outer Satellite Ring / Halo
-    const ringGeometry = new THREE.RingGeometry(7.2, 7.3, 64);
-    const ringMaterial = new THREE.MeshBasicMaterial({
-      color: 0x0088ff,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.2,
-      blending: THREE.AdditiveBlending
-    });
-    const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
-    ringMesh.rotation.x = Math.PI / 2.5;
-    scene.add(ringMesh);
-
-    // Outer Latitudinal Wireframe Orb (for advanced medical node visualization)
-    const orbitGeometry = new THREE.IcosahedronGeometry(7.5, 1);
-    const orbitMaterial = new THREE.MeshBasicMaterial({
-      color: 0xbd00ff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.08,
-      blending: THREE.AdditiveBlending
-    });
-    const orbitMesh = new THREE.Mesh(orbitGeometry, orbitMaterial);
-    scene.add(orbitMesh);
-
-    // Ambient Grid Floor
-    const gridHelper = new THREE.GridHelper(50, 20, 0x00f0ff, 0x0b1329);
-    gridHelper.position.y = -10;
-    gridHelper.material.transparent = true;
-    gridHelper.material.opacity = 0.18;
-    scene.add(gridHelper);
-
-    // Mouse Controls
-    let mouseX = 0;
-    let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
-
-    const onMouseMove = (event: MouseEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      mouseX = (event.clientX - rect.left - width / 2) * 0.01;
-      mouseY = (event.clientY - rect.top - height / 2) * 0.01;
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-
-    // Resize Observer
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (let entry of entries) {
-        const w = entry.contentRect.width;
-        const h = entry.contentRect.height;
-        renderer.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      }
-    });
-    resizeObserver.observe(mountRef.current);
-
-    // Animation loop
-    let animationId: number;
-    let clock = new THREE.Clock();
-
-    const animate = () => {
-      animationId = requestAnimationFrame(animate);
-
-      const elapsed = clock.getElapsedTime();
-      const currentTelemetry = telemetryRef.current;
-
-      // Base dynamic speeds based on current Neural coherence or Heart rate metrics
-      const speedMultiplier = 1.0 + (currentTelemetry.neuralHz - 35) / 10;
-      const pulseScaling = 1.0 + Math.sin(elapsed * 4.0) * 0.05 * (currentTelemetry.heartRate / 70);
-
-      // Smooth mouse damping
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
-
-      // Rotate particle systems based on telemetries
-      particleSystem.rotation.y = elapsed * 0.08 * speedMultiplier + targetX;
-      particleSystem.rotation.x = elapsed * 0.05 + targetY;
-      
-      // Rotate nested cores in diverse axis
-      coreMesh.rotation.y = -elapsed * 0.12 * speedMultiplier;
-      coreMesh.rotation.z = elapsed * 0.06;
-      coreMesh.scale.set(pulseScaling, pulseScaling, pulseScaling);
-
-      orbitMesh.rotation.y = elapsed * 0.03 + targetX * 0.5;
-      orbitMesh.rotation.x = -elapsed * 0.02 + targetY * 0.5;
-
-      ringMesh.rotation.z = elapsed * 0.1 * speedMultiplier;
-
-      // Custom pulse light simulation for metabolic updates
-      if (currentTelemetry.heartRate > 85) {
-        particleMaterial.size = 0.45 + Math.sin(elapsed * 12.0) * 0.1;
-      } else {
-        particleMaterial.size = 0.35 + Math.sin(elapsed * 6.0) * 0.05;
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // Cleanup
-    return () => {
-      cancelAnimationFrame(animationId);
-      window.removeEventListener("mousemove", onMouseMove);
-      resizeObserver.disconnect();
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      renderer.dispose();
-      geometry.dispose();
-      particleMaterial.dispose();
-      coreGeometry.dispose();
-      coreMaterial.dispose();
-      ringGeometry.dispose();
-      ringMaterial.dispose();
-      orbitGeometry.dispose();
-      orbitMaterial.dispose();
-    };
-  }, []);
+  // Dynamic system health statuses matching mockup
+  const systems = [
+    { name: "Heart", status: "Healthy", desc: "Stable ECG", color: "text-emerald-400" },
+    { name: "Brain", status: "Optimal", desc: "40 Hz Alpha-Resonance", color: "text-emerald-400" },
+    { name: "Lungs", status: "Healthy", desc: "98% Blood Saturation", color: "text-emerald-400" },
+    { name: "Liver", status: "Normal", desc: "Metabolic Synthesis", color: "text-emerald-400" },
+    { name: "Immunity", status: "Strong", desc: "No conflict triggers", color: "text-emerald-400" },
+    { name: "Metabolism", status: "Balanced", desc: "CG-Sensors stabilized", color: "text-emerald-400" },
+  ];
 
   return (
-    <div id="vortex-neural-cell" className="relative w-full h-[360px] md:h-[420px] rounded-2xl glass-panel overflow-hidden flex flex-col justify-between p-5 border border-neon-cyan/20">
-      {/* Background Overlay */}
-      <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-neon-cyan/10 to-transparent pointer-events-none" />
-      <div className="absolute inset-0 cyber-dot-grid opacity-30 pointer-events-none" />
-      
-      {/* Header telemetry metadata */}
-      <div className="z-10 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse" />
-          <span className="font-mono text-[10px] tracking-widest text-slate-400">DECEN_INTELLIGENCE_NODE</span>
+    <div id="vortex-neural-cell" className="relative w-full rounded-2xl bg-[#040c16]/90 border border-slate-900 overflow-hidden flex flex-col p-6 hover:border-emerald-500/10 transition-all shadow-xl">
+      {/* Background design elements */}
+      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 cyber-dot-grid opacity-15 pointer-events-none" />
+
+      {/* Title block */}
+      <div className="flex items-center justify-between mb-5 z-10">
+        <div>
+          <h3 className="font-display font-medium text-xs tracking-widest text-slate-500 uppercase leading-none">YOUR DIGITAL TWIN</h3>
+          <p className="text-xs text-slate-400 font-sans tracking-wide mt-1">Real-time Personalized Health Model</p>
         </div>
-        <div className="flex bg-slate-950/80 p-0.5 rounded-lg border border-neon-cyan/10 gap-1 text-[10px] font-mono">
-          {(["NEURAL", "GENOMICS", "LEDGER"] as const).map((m) => (
+        <div className="flex items-center gap-1.5 bg-emerald-950/20 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[9px] font-semibold text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>TWIN STATUS: LIVE</span>
+        </div>
+      </div>
+
+      {/* Main Core Body Layout */}
+      <div className="grid grid-cols-12 gap-4 items-center flex-1 z-10">
+        {/* Left Side: Systems Status Icons list matching mockup exactly */}
+        <div className="col-span-3 flex flex-col gap-2.5">
+          {systems.map((sys) => (
             <button
-              id={`mode-${m.toLowerCase()}`}
-              key={m}
-              onClick={() => setActiveMode(m)}
-              className={`px-2 py-0.5 rounded-md transition-all ${
-                activeMode === m
-                  ? "bg-neon-cyan text-cyber-dark font-semibold shadow-sm"
-                  : "text-slate-400 hover:text-white"
+              key={sys.name}
+              onClick={() => setSelectedSystem(selectedSystem === sys.name ? null : sys.name)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-left border transition-all ${
+                selectedSystem === sys.name
+                  ? "bg-emerald-950/20 border-emerald-500/30 shadow-[0_0_8px_rgba(16,185,129,0.1)]"
+                  : "bg-[#05111d]/50 border-slate-900/60 hover:bg-[#05111d]"
               }`}
             >
-              {m}
+              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(16,185,129,0.5)] shrink-0" />
+              <div className="leading-tight overflow-hidden">
+                <span className="block text-[11px] font-bold text-white leading-none">{sys.name}</span>
+                <span className="block text-[9px] text-slate-400 leading-none mt-1">{sys.status}</span>
+              </div>
             </button>
           ))}
         </div>
+
+        {/* Center: Glowing 3D Holographic human wireframe render */}
+        <div className="col-span-6 flex flex-col items-center justify-center relative min-h-[240px]">
+          {/* Holographic scanner halo circle base style placeholder */}
+          <div className="absolute bottom-2 w-32 h-10 border-t border-emerald-500/20 rounded-full scale-y-50 rotate-[-12deg] bg-emerald-500/3 animate-pulse border-dashed flex items-center justify-center">
+            <div className="w-16 h-4 border-t border-emerald-400/30 rounded-full animate-ping" />
+          </div>
+
+          <div className="relative w-44 h-56 flex items-center justify-center overflow-hidden hover:scale-[1.03] transition-all duration-500">
+            {/* Real imported 3D generated human mockup */}
+            <img
+              src={twinModelImg}
+              alt="Digital Twin Body"
+              className="w-full h-full object-contain pointer-events-none drop-shadow-[0_0_20px_rgba(16,185,129,0.15)] rounded-2xl"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        </div>
+
+        {/* Right Side Status Panel HUD matching mockup text exactly */}
+        <div className="col-span-3 flex flex-col justify-center gap-4.5 pl-2">
+          {/* Health Score Circular representation */}
+          <div className="bg-[#05111d]/50 border border-slate-900 p-3 rounded-2xl">
+            <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block leading-none mb-2">Health Score</span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-black font-sans text-emerald-400 select-all leading-none">87</span>
+              <span className="text-[11px] text-slate-500 leading-none">/100</span>
+            </div>
+            {/* Visual indicator bar */}
+            <div className="w-full bg-slate-900 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div className="bg-emerald-500 h-full rounded-full" style={{ width: "87%" }} />
+            </div>
+          </div>
+
+          {/* Risk assessment indicator level */}
+          <div className="bg-[#05111d]/50 border border-slate-900 p-3 rounded-2xl flex items-center justify-between">
+            <div className="leading-tight">
+              <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest block leading-none mb-1">Risk Level</span>
+              <span className="text-xs font-bold text-white">Low</span>
+            </div>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]" />
+          </div>
+
+          {/* Last updated timestamp info */}
+          <div className="text-[9px] font-mono text-slate-500 leading-tight">
+            <span>Last Updated</span>
+            <strong className="block text-slate-400 mt-0.5">10 mins ago</strong>
+          </div>
+        </div>
       </div>
 
-      {webglError ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-slate-400 text-center px-4">
-          <ShieldAlert className="w-12 h-12 text-neon-rose mb-3 animate-pulse" />
-          <p className="font-display font-medium text-white mb-1">WebGL Subsystem Deferred</p>
-          <p className="text-xs text-slate-500 max-w-xs">Hardware acceleration is restricted or legacy in this runtime frame. Activating CSS core particle simulation.</p>
-        </div>
-      ) : (
-        <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-pointer" />
-      )}
-
-      {/* Futuristic bottom HUD diagnostics overlay */}
-      <div className="z-10 grid grid-cols-3 bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border border-neon-cyan/10 gap-2.5 text-center transition-all duration-300">
-        <div className="flex flex-col items-center justify-center border-r border-neon-cyan/10">
-          <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-            <Cpu className="w-3.5 h-3.5 text-neon-cyan" />
-            <span className="text-[9px] font-mono tracking-wider">NEURAL_SYNAPSE</span>
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white font-mono">
-            {neuralHz} <span className="text-[9px] text-neon-cyan">Hz</span>
-          </span>
-          <div className="text-[8px] font-mono text-neon-cyan/80 mt-0.5">Gamma Resonance</div>
-        </div>
-
-        <div className="flex flex-col items-center justify-center border-r border-neon-cyan/10">
-          <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-            <Activity className="w-3.5 h-3.5 text-neon-blue" />
-            <span className="text-[9px] font-mono tracking-wider">HEART_STABILIZER</span>
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white font-mono">
-            {heartRate} <span className="text-[9px] text-neon-blue font-semibold">BPM</span>
-          </span>
-          <div className="text-[8px] font-mono text-neon-blue/80 mt-0.5">Pulse Synchrony</div>
-        </div>
-
-        <div className="flex flex-col items-center justify-center">
-          <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-neon-purple animate-pulse" />
-            <span className="text-[9px] font-mono tracking-wider">CRYPT_LEDGER</span>
-          </div>
-          <span className="text-xs font-semibold tracking-tight text-slate-300 font-mono">ED25519_OK</span>
-          <div className="text-[8px] font-mono text-neon-purple/80 mt-1">IPFS Block #641K</div>
-        </div>
-      </div>
+      {/* Button: Explore My Digital Twin */}
+      <button className="w-full py-3 mt-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/5 hover:from-emerald-500/20 hover:to-teal-500/15 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-400 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2">
+        <Compass className="w-4 h-4 text-emerald-400 shrink-0" />
+        Explore My Digital Twin
+      </button>
     </div>
   );
 }

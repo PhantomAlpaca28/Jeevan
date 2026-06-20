@@ -18,7 +18,7 @@ interface LoginProps {
 export default function Login({ onLogin }: LoginProps) {
   const [selectedRole, setSelectedRole] = useState<UserRole>("PATIENT");
   const [isScanning, setIsScanning] = useState(false);
-  const [customDid, setCustomDid] = useState("did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2");
+  const [customDid, setCustomDid] = useState("did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2");
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
     "INITIATOR: Handshake requesting secure workspace socket...",
     "HANDSHAKE: TLS_AES_256_GCM_SHA384 active.",
@@ -31,16 +31,16 @@ export default function Login({ onLogin }: LoginProps) {
   const handleRoleSelect = (role: UserRole) => {
     setSelectedRole(role);
     if (role === "PATIENT") {
-      setCustomDid("did:vortexa:ipns:8f2a9e31dcdc6bf71b4eef2");
+      setCustomDid("did:vitaltwin:ipns:8f2a9e31dcdc6bf71b4eef2");
       addLog("CONFIG: Role selection updated to Sovereign Patient Node.");
     } else if (role === "DOCTOR") {
-      setCustomDid("did:vortexa:operator:doc_9031ef09cda81");
+      setCustomDid("did:vitaltwin:operator:doc_9031ef09cda81");
       addLog("CONFIG: Role selection updated to Operator Clinical Node.");
     } else if (role === "PHARMACIST") {
-      setCustomDid("did:vortexa:operator:phr_2289bcf2ad31e");
+      setCustomDid("did:vitaltwin:operator:phr_2289bcf2ad31e");
       addLog("CONFIG: Role selection updated to Operator Pharmaceutical Node.");
     } else {
-      setCustomDid("did:vortexa:admin:sec_77ad0a01ee8cf");
+      setCustomDid("did:vitaltwin:admin:sec_77ad0a01ee8cf");
       addLog("CONFIG: Role selection updated to Network Cybersecurity Admin Node.");
     }
   };
@@ -64,7 +64,7 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div id="vortexa-login-container" className="min-h-screen bg-slate-950/60 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div id="vitaltwin-login-container" className="min-h-screen bg-slate-950/60 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       {/* Background Loop Video Layer */}
       <BackgroundVideo opacity={0.5} />
 
@@ -91,7 +91,7 @@ export default function Login({ onLogin }: LoginProps) {
                 <Network className="w-7 h-7 text-neon-cyan animate-pulse" />
               </div>
             </div>
-            <h2 className="font-display font-black text-3xl tracking-tight text-white leading-tight">VORTEXA</h2>
+            <h2 className="font-display font-black text-3xl tracking-tight text-white leading-tight">VITAL TWIN</h2>
             <p className="text-xs text-neon-cyan font-bold tracking-widest mt-1 font-mono uppercase">Sovereign Healthcare Intelligence Network</p>
           </div>
 

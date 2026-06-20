@@ -12,14 +12,19 @@ import {
   Layers,
   Activity,
   CheckCircle2,
-  AlertCircle,
   RefreshCw,
   Gauge,
   Zap,
   Flame,
-  ShieldCheck
+  ShieldCheck,
+  Search,
+  Check
 } from "lucide-react";
 import GlassCard from "./GlassCard";
+
+// Import the generated premium 3D pill bottle asset
+// @ts-ignore
+import pillBottleImg from "../assets/images/3d_prescription_pill_bottle_1781988028395.jpg";
 
 interface ChemicalCompound {
   name: string;
@@ -96,93 +101,89 @@ export default function PharmacistCoherence() {
     );
     setCryoPressure(99.0);
     setIsCalibrating(false);
-    setCalibrationLog("MOLECULAR_ALIGNMENT_SUCCESS: All biocatalyst vessels optimized to -80.0°C cryo-baseline.");
+    setCalibrationLog("MOLECULAR_ALIGNMENT_SUCCESS: All automatic bio-prescriptions synced to the decentralized ledger.");
   };
 
   return (
     <div id="pharmacist-coherence-container" className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left column: Rotating Molecular Lattice Visualization and controls */}
+        {/* Left column: Rotating 3D Prescriptions monitor and controls */}
         <div className="lg:col-span-7 flex flex-col gap-6">
-          <div id="pharmacist-3d-chemical-lattice" className="relative w-full h-[360px] md:h-[420px] rounded-2xl glass-panel overflow-hidden flex flex-col justify-between p-5 border border-neon-cyan/20 bg-slate-950/20">
-            <div className="absolute inset-0 cyber-dot-grid opacity-30 pointer-events-none" />
+          <div id="pharmacist-3d-chemical-lattice" className="relative w-full rounded-2xl border border-slate-900 bg-[#040c16]/90 overflow-hidden flex flex-col justify-between p-6 hover:border-emerald-500/10 transition-all shadow-xl">
+            <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 cyber-dot-grid opacity-15 pointer-events-none" />
             
             {/* Holographic Header */}
-            <div className="z-10 flex items-center justify-between">
+            <div className="z-10 flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse" />
-                <span className="font-mono text-[10px] tracking-widest text-slate-400">BIOPHARMACEUTIC_MONITOR</span>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_4px_rgba(16,185,129,0.5)]" />
+                <span className="font-mono text-[10px] tracking-widest text-slate-400">PRESCRIPTION_CYBER_SYNTHESIZER</span>
               </div>
-              <span className="font-mono text-[9px] text-neon-cyan bg-neon-cyan/10 border border-neon-cyan/20 px-2.5 py-0.5 rounded uppercase font-bold leading-none">
-                Cryo-Vesicle Active
+              <span className="font-mono text-[9px] text-emerald-400 bg-emerald-950/20 border border-emerald-500/20 px-2.5 py-0.5 rounded-full uppercase font-bold leading-none">
+                3D Dispenser Active
               </span>
             </div>
 
-            {/* Simulated Animated Molecular Geometry Map */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="relative w-72 h-72">
-                {/* Rotating outermost circle */}
-                <div className="absolute inset-0 rounded-full border border-dashed border-neon-blue/30 animate-[spin_40s_linear_infinite]" />
-                {/* Rotating middle circle with orbit items */}
-                <div className="absolute inset-6 rounded-full border border-neon-cyan/15 animate-[spin_25s_linear_infinite_reverse]">
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-neon-cyan/80 shadow-[0_0_8px_rgba(0,240,255,0.7)]" />
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-neon-purple/80 shadow-[0_0_8px_rgba(189,0,255,0.7)]" />
-                </div>
-                {/* Rotating inside geometric cage */}
-                <div className="absolute inset-14 flex items-center justify-center animate-[spin_12s_linear_infinite]">
-                  <svg className="w-full h-full text-neon-blue/40" viewBox="0 0 100 100" type="svg">
-                    <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="currentColor" strokeWidth="0.8" />
-                    <polygon points="50,15 85,32 85,68 50,85 15,68 15,32" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" />
-                    <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="0.5" />
-                    <line x1="5" y1="25" x2="95" y2="75" stroke="currentColor" strokeWidth="0.5" />
-                    <line x1="5" y1="75" x2="95" y2="25" stroke="currentColor" strokeWidth="0.5" />
-                    
-                    {/* Glowing Atoms */}
-                    <circle cx="50" cy="50" r="6" className="fill-neon-cyan/80 stroke-neon-cyan animate-pulse" />
-                    <circle cx="50" cy="15" r="3.5" className="fill-neon-blue/80 stroke-neon-blue" />
-                    <circle cx="85" cy="32" r="3" className="fill-neon-purple/90" />
-                    <circle cx="15" cy="68" r="3" className="fill-neon-purple/90" />
-                  </svg>
-                </div>
+            {/* Real 3D pill bottle image rendering center stage */}
+            <div className="flex flex-col items-center justify-center relative min-h-[300px] my-2 z-10">
+              {/* Green scanner scanning wave laser overlay */}
+              <div className="absolute top-1/4 w-44 h-[2px] bg-emerald-400 opacity-60 shadow-[0_0_12px_rgba(16,185,129,0.8)] animate-bounce" />
+              
+              <div className="absolute bottom-6 w-36 h-12 border-t border-emerald-500/20 rounded-full scale-y-50 rotate-[-10deg] bg-emerald-500/3 animate-pulse flex items-center justify-center">
+                <div className="w-16 h-4 border-t border-emerald-400/30 rounded-full animate-ping" />
+              </div>
+
+              <div className="relative w-40 h-52 flex items-center justify-center overflow-hidden hover:scale-[1.04] transition-all duration-500 rounded-2xl">
+                <img
+                  src={pillBottleImg}
+                  alt="3D Prescription Pill Bottle"
+                  className="w-full h-full object-contain pointer-events-none drop-shadow-[0_0_24px_rgba(16,185,129,0.2)]"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+
+              <div className="text-center mt-2">
+                <span className="text-[10px] uppercase tracking-wider font-mono text-emerald-400 leading-none">Formulation Container Sec-1</span>
+                <p className="text-[9px] text-slate-500 mt-0.5">Biocompatible Smart Capsule Deployment System</p>
               </div>
             </div>
 
             {/* Bottom Molecular HUD Metrics */}
-            <div className="z-10 grid grid-cols-3 bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border border-neon-cyan/10 gap-2.5 text-center leading-none">
-              <div className="flex flex-col items-center justify-center border-r border-neon-cyan/10">
+            <div className="z-10 grid grid-cols-3 bg-[#05111d] p-3.5 rounded-xl border border-slate-900 gap-2.5 text-center leading-none">
+              <div className="flex flex-col items-center justify-center border-r border-slate-900">
                 <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-                  <Thermometer className="w-3.5 h-3.5 text-neon-cyan" />
+                  <Thermometer className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="text-[9px] font-mono tracking-wider">CRYO_BASE</span>
                 </div>
                 <span className="text-sm font-semibold tracking-tight text-white font-mono">
-                  -80.0 <span className="text-[9px] text-neon-cyan">°C</span>
+                  -80.0 <span className="text-[9px] text-emerald-400">°C</span>
                 </span>
-                <div className="text-[8px] font-mono text-neon-cyan/80 mt-0.5">Absolute Threshold</div>
+                <div className="text-[8px] font-mono text-slate-500 mt-1">Temperature Lock</div>
               </div>
 
-              <div className="flex flex-col items-center justify-center border-r border-neon-cyan/10 col-auto">
+              <div className="flex flex-col items-center justify-center border-r border-slate-900 col-auto">
                 <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-                  <Wind className="w-3.5 h-3.5 text-neon-blue" />
+                  <Wind className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="text-[9px] font-mono tracking-wider">PRESSURE</span>
                 </div>
                 <span className="text-sm font-semibold tracking-tight text-white font-mono">
-                  {cryoPressure}% <span className="text-[8px] text-neon-blue font-semibold">COH</span>
+                  {cryoPressure}% <span className="text-[8px] text-emerald-400 font-semibold">COH</span>
                 </span>
-                <div className="text-[8px] font-mono text-neon-blue/80 mt-0.5">Atmospheric Seal</div>
+                <div className="text-[8px] font-mono text-slate-500 mt-1">Atmospheric Seal</div>
               </div>
 
               <div className="flex flex-col items-center justify-center">
                 <div className="flex items-center gap-1.5 text-slate-400 mb-1">
-                  <Layers className="w-3.5 h-3.5 text-neon-purple" />
+                  <Layers className="w-3.5 h-3.5 text-emerald-400" />
                   <span className="text-[9px] font-mono tracking-wider">PURITY_INDEX</span>
                 </div>
                 <span className="text-sm font-semibold tracking-tight text-slate-200 font-mono">99.87%</span>
-                <div className="text-[8px] font-mono text-neon-purple/80 mt-0.5">Zero Congestion</div>
+                <div className="text-[8px] font-mono text-slate-500 mt-1">Zero Congestion</div>
               </div>
             </div>
           </div>
 
-          <GlassCard glowColor="none" hoverable={false} className="p-4 bg-slate-950/40">
+          <GlassCard glowColor="none" hoverable={false} className="p-4 bg-slate-950/40 border-slate-900">
             <h4 className="font-display font-medium text-xs text-white border-b border-slate-900 pb-2 mb-3">
               Molecular Core Calibration Controls
             </h4>
@@ -194,7 +195,7 @@ export default function PharmacistCoherence() {
                 id="recalibrate-compounds-btn"
                 onClick={handleRecalibrateVessels}
                 disabled={isCalibrating}
-                className="w-full py-3 rounded-lg border border-neon-cyan/30 text-neon-cyan font-mono text-[10px] uppercase font-bold tracking-wider hover:bg-neon-cyan/10 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/5 hover:from-emerald-500/20 hover:to-teal-500/15 border border-emerald-500/25 hover:border-emerald-500/40 text-emerald-400 font-mono text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <RefreshCw className={`w-4 h-4 ${isCalibrating ? "animate-spin" : ""}`} />
                 {isCalibrating ? "Aligning Cryogenic Core Lattice..." : "Perform He-Lattice Recalibration"}
@@ -206,7 +207,7 @@ export default function PharmacistCoherence() {
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="p-3 bg-neon-cyan/5 border border-neon-cyan/30 text-neon-cyan font-mono text-[9.5px] rounded-lg flex items-center gap-2"
+                    className="p-3 bg-emerald-950/20 border border-emerald-500/30 text-emerald-400 font-mono text-[9.5px] rounded-lg flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>{calibrationLog}</span>
@@ -219,8 +220,8 @@ export default function PharmacistCoherence() {
 
         {/* Right column: Storage vessels state monitors */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          <GlassCard glowColor="cyan" hoverable={false} className="p-5">
-            <h4 className="font-display font-medium text-xs text-white border-b border-slate-900 pb-2.5 mb-4">
+          <GlassCard glowColor="cyan" hoverable={false} className="p-5 border-slate-900 bg-[#040c16]/90">
+            <h4 className="font-display font-medium text-xs text-white border-b border-slate-900 pb-2.5 mb-4 uppercase tracking-wider">
               Vessel Synthesis Health & Metrics
             </h4>
 
@@ -228,14 +229,14 @@ export default function PharmacistCoherence() {
               {compounds.map((comp) => (
                 <div
                   key={comp.vesselId}
-                  className="bg-slate-950/50 border border-slate-900/60 p-4 rounded-xl space-y-3 font-mono text-[10.5px] leading-none"
+                  className="bg-[#05111d] border border-slate-900 p-4 rounded-xl space-y-3 font-mono text-[10.5px] leading-none"
                 >
                   <div className="flex justify-between items-start leading-none gap-2">
                     <div>
                       <h5 className="font-display text-xs font-bold text-slate-200 mt-1 block leading-normal">{comp.name}</h5>
                       <span className="text-[8.5px] text-slate-500 mt-1 block">{comp.vesselId}</span>
                     </div>
-                    <span className="text-[8px] bg-neon-cyan/5 border border-neon-cyan/20 text-neon-cyan px-2 py-0.5 rounded font-bold uppercase tracking-wider shrink-0 leading-none">
+                    <span className="text-[8px] bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider shrink-0 leading-none">
                       Purity {comp.purity}%
                     </span>
                   </div>
@@ -260,7 +261,7 @@ export default function PharmacistCoherence() {
                     </div>
                     <div className="h-1 w-full bg-slate-900 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-neon-blue to-neon-cyan rounded-full transition-all duration-1000"
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-1000"
                         style={{ width: `${comp.purity}%` }}
                       />
                     </div>
@@ -270,15 +271,15 @@ export default function PharmacistCoherence() {
             </div>
           </GlassCard>
 
-          <GlassCard glowColor="none" hoverable={false} className="p-4 bg-slate-950/60 leading-normal text-[10px]">
+          <GlassCard glowColor="none" hoverable={false} className="p-4 bg-slate-950/60 leading-normal text-[10px] border-slate-900">
             <div className="flex items-center gap-2 border-b border-slate-900 pb-2 mb-2.5">
-              <ShieldCheck className="w-4 h-4 text-neon-green" />
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
               <span className="font-mono text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">
                 Pharmacy-Gate Certifications
               </span>
             </div>
             <p className="font-mono text-slate-400 text-[9px] leading-relaxed">
-              Pharmaceutical and compound modifications require concurrent authorization of the clinician signature keys and active patient consent grant logs. All updates successfully synced to distributed Vortexa ledger blocks.
+              Pharmaceutical and compound modifications require concurrent authorization of the clinician signature keys and active patient consent grant logs. All updates successfully synced to distributed Vital Twin ledger blocks.
             </p>
           </GlassCard>
         </div>

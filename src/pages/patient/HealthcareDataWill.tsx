@@ -36,7 +36,7 @@ interface DataWillSetting {
 
 export default function HealthcareDataWill() {
   const [trusteeName, setTrusteeName] = useState("Alexander Vance");
-  const [trusteeDid, setTrusteeDid] = useState("did:vortexa:ipns:3c0d8f7ea3321bcc8dca101");
+  const [trusteeDid, setTrusteeDid] = useState("did:vitaltwin:ipns:3c0d8f7ea3321bcc8dca101");
   const [selectedResearchType, setSelectedResearchType] = useState<string>("Longevity & Genetics");
   const [destructionProtocol, setDestructionProtocol] = useState<string>("SHA-512 Zeroing Sweep");
   const [isSaved, setIsSaved] = useState(false);
@@ -334,7 +334,7 @@ export default function HealthcareDataWill() {
             <div className="mt-6 pt-4 border-t border-dashed border-slate-800 flex items-center justify-between font-mono text-[8px] text-slate-500 leading-none">
               <div>
                 <span>CONTRACT_CIPHER_PROOF:</span>
-                <span className="text-slate-400 block font-semibold mt-1">did:vortexa:contract:will:0x1b7ae9c</span>
+                <span className="text-slate-400 block font-semibold mt-1">did:vitaltwin:contract:will:0x1b7ae9c</span>
               </div>
               <div className="text-right">
                 <span>REVISION:</span>

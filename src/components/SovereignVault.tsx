@@ -3,114 +3,211 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useRef, useState, useEffect, Suspense } from "react";
+import { useRef, useState, useEffect, Suspense, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Sphere, MeshDistortMaterial, Float } from "@react-three/drei";
+import { OrbitControls, Icosahedron, Float } from "@react-three/drei";
 import * as THREE from "three";
 import { ShieldCheck, Cpu, Database, Info } from "lucide-react";
 
-// Inner Tech Core of the Sovereign Health Vault
-function VaultCore() {
-  const coreRef = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
-  const ringRef2 = useRef<THREE.Mesh>(null);
+// Concentric Orbiting Cryptographic Security Rings
+function CryptoSecurityRings() {
+  const groupRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
-    if (coreRef.current) {
-      coreRef.current.rotation.y = elapsed * 0.4;
-      coreRef.current.rotation.x = elapsed * 0.2;
-      
-      // Heartbeat pulse simulation
-      const pulse = 1.0 + Math.sin(elapsed * 3.0) * 0.08;
-      coreRef.current.scale.set(pulse, pulse, pulse);
-    }
-    if (ringRef.current) {
-      ringRef.current.rotation.z = -elapsed * 0.8;
-      ringRef.current.rotation.x = elapsed * 0.1;
-    }
-    if (ringRef2.current) {
-      ringRef2.current.rotation.y = elapsed * 1.2;
+    if (groupRef.current) {
+      const rings = groupRef.current.children;
+      // Reverse and varying speeds for gorgeous dynamic movement
+      if (rings[0]) rings[0].rotation.z = elapsed * 0.45;
+      if (rings[1]) rings[1].rotation.x = -elapsed * 0.3;
+      if (rings[2]) rings[2].rotation.y = elapsed * 0.6;
     }
   });
 
   return (
-    <group ref={coreRef}>
-      {/* Central power node */}
-      <mesh>
-        <octahedronGeometry args={[0.7, 2]} />
+    <group ref={groupRef}>
+      {/* Outer Cyan Ring */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[2.0, 2.05, 64]} />
+        <meshBasicMaterial color="#00f0ff" side={THREE.DoubleSide} transparent opacity={0.5} />
+      </mesh>
+
+      {/* Tilted Purple Segment ring */}
+      <mesh rotation={[Math.PI / 4, Math.PI / 6, 0]}>
+        <ringGeometry args={[2.2, 2.23, 64]} />
+        <meshBasicMaterial color="#bd00ff" side={THREE.DoubleSide} transparent opacity={0.35} />
+      </mesh>
+
+      {/* Inner Blue Tech Segment */}
+      <mesh rotation={[-Math.PI / 3, Math.PI / 4, 0]}>
+        <ringGeometry args={[2.3, 2.38, 6, 1, 0, Math.PI * 1.6]} />
+        <meshBasicMaterial color="#0088ff" side={THREE.DoubleSide} transparent opacity={0.4} wireframe />
+      </mesh>
+    </group>
+  );
+}
+
+// Quantum Bits orbiting inside containment shield (Data Starfield)
+function QuantumDataParticles({ count = 150 }) {
+  const pointsRef = useRef<THREE.Points>(null);
+
+  const particles = useMemo(() => {
+    const temp = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      // Distribute points spherically within the containment shield radius
+      const u = Math.random();
+      const v = Math.random();
+      const theta = u * 2.0 * Math.PI;
+      const phi = Math.acos(2.0 * v - 1.0);
+      const r = 0.5 + Math.random() * 1.1; // Orbiting between center core and geodesic shield
+
+      temp[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      temp[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      temp[i * 3 + 2] = r * Math.cos(phi);
+    }
+    return temp;
+  }, [count]);
+
+  useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime();
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y = -elapsed * 0.12;
+      pointsRef.current.rotation.x = elapsed * 0.05;
+    }
+  });
+
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          args={[particles, 3]}
+          count={count}
+          array={particles}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#00f0ff"
+        size={0.055}
+        sizeAttenuation
+        transparent
+        opacity={0.8}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+// Sleek, Multi-Faceted Geodesic energy shield (replaces wobbly cell membrane)
+function CryptographicGeodesicShield() {
+  const shieldRef = useRef<THREE.Mesh>(null);
+  const coreGridRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime();
+    if (shieldRef.current) {
+      shieldRef.current.rotation.y = elapsed * 0.08;
+      shieldRef.current.rotation.z = elapsed * 0.04;
+    }
+    if (coreGridRef.current) {
+      coreGridRef.current.rotation.y = -elapsed * 0.12;
+      coreGridRef.current.rotation.x = elapsed * 0.06;
+    }
+  });
+
+  return (
+    <group>
+      {/* Geodesic faceted pristine glass shield */}
+      <mesh ref={shieldRef}>
+        <icosahedronGeometry args={[1.7, 1]} />
+        <meshPhysicalMaterial
+          color="#061e2f"
+          emissive="#002d44"
+          roughness={0.15}
+          metalness={0.9}
+          transmission={0.65}
+          ior={1.4}
+          thickness={0.8}
+          transparent
+          opacity={0.65}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+
+      {/* Cybernetic Wireframe outer alignment grid */}
+      <mesh ref={coreGridRef}>
+        <icosahedronGeometry args={[1.71, 1]} />
         <meshBasicMaterial
           color="#00f0ff"
           wireframe
           transparent
-          opacity={0.8}
+          opacity={0.35}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
-      
-      {/* Inner bright solid core */}
+
+      {/* Soft neon energy envelope */}
       <mesh>
-        <sphereGeometry args={[0.4, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" />
-      </mesh>
-
-      {/* Embedded tech rings */}
-      <mesh ref={ringRef} rotation={[Math.PI / 3, 0, 0]}>
-        <ringGeometry args={[1.0, 1.1, 32]} />
+        <sphereGeometry args={[1.76, 32, 32]} />
         <meshBasicMaterial
-          color="#0088ff"
-          side={THREE.DoubleSide}
+          color="#00f0ff"
           transparent
-          opacity={0.7}
-        />
-      </mesh>
-
-      <mesh ref={ringRef2} rotation={[0, Math.PI / 4, 0]}>
-        <ringGeometry args={[1.3, 1.35, 4]} />
-        <meshBasicMaterial
-          color="#bd00ff"
-          side={THREE.DoubleSide}
-          transparent
-          opacity={0.5}
-          wireframe
+          opacity={0.04}
+          side={THREE.BackSide}
         />
       </mesh>
     </group>
   );
 }
 
-// Fluid Glass Membrane surrounding the core (simulating highly refractive organic bubble)
-function FluidMembrane() {
-  const meshRef = useRef<any>(null);
+// Inner Tech Core of the Sovereign Health Vault
+function VaultCore() {
+  const coreRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
     const elapsed = state.clock.getElapsedTime();
-    if (meshRef.current) {
-      // Rotate slowly for visual richness
-      meshRef.current.rotation.y = elapsed * 0.15;
-      meshRef.current.rotation.x = elapsed * 0.08;
+    if (coreRef.current) {
+      coreRef.current.rotation.y = elapsed * 0.65;
+      coreRef.current.rotation.x = elapsed * 0.35;
+      
+      // Heartbeat pulse simulation
+      const pulse = 1.0 + Math.sin(elapsed * 3.5) * 0.12;
+      coreRef.current.scale.set(pulse, pulse, pulse);
     }
   });
 
   return (
-    <Sphere ref={meshRef} args={[2.0, 64, 64]}>
-      {/* Using Drei's distorted material to warp vertices using animated simplex noise */}
-      <MeshDistortMaterial
-        color="#ffffff"
-        distort={0.28} // Distort level
-        speed={1.6} // Speed of the wave ripple animation
-        roughness={0.01}
-        metalness={0.1}
-        clearcoat={1.0}
-        clearcoatRoughness={0.1}
-        transmission={0.95} // High glass transmission
-        ior={1.45} // High refraction index
-        thickness={1.5}
-        transparent
-        opacity={0.85}
-        attenuationColor="#00f0ff"
-        attenuationDistance={0.5}
-      />
-    </Sphere>
+    <group ref={coreRef}>
+      {/* Central power octahedron */}
+      <mesh>
+        <octahedronGeometry args={[0.5, 0]} />
+        <meshBasicMaterial
+          color="#00f0ff"
+          wireframe
+          transparent
+          opacity={0.9}
+        />
+      </mesh>
+      
+      {/* Inner bright solid active core */}
+      <mesh>
+        <sphereGeometry args={[0.22, 16, 16]} />
+        <meshBasicMaterial color="#ffffff" />
+      </mesh>
+
+      {/* Embedded orbiting core satellites */}
+      <group rotation={[Math.PI / 4, 0, 0]}>
+        <mesh position={[0.42, 0, 0]}>
+          <boxGeometry args={[0.08, 0.08, 0.08]} />
+          <meshBasicMaterial color="#bd00ff" />
+        </mesh>
+        <mesh position={[-0.42, 0, 0]}>
+          <boxGeometry args={[0.08, 0.08, 0.08]} />
+          <meshBasicMaterial color="#bd00ff" />
+        </mesh>
+      </group>
+    </group>
   );
 }
 
@@ -174,7 +271,9 @@ function VaultScene() {
       
       <ExternalProbes />
       <VaultCore />
-      <FluidMembrane />
+      <CryptographicGeodesicShield />
+      <QuantumDataParticles />
+      <CryptoSecurityRings />
 
       <OrbitControls
         enableZoom={false}

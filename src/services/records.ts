@@ -70,7 +70,7 @@ const INITIAL_DOCUMENTS: MedicalDocument[] = [
     title: "Sovereign Network Mutual-Assurance Coverage Plan",
     date: "2026-01-10 09:00 UTC",
     category: "Insurance Documents",
-    doctorName: "Vortexa Underwriters Node",
+    doctorName: "Vital Twin Underwriters Node",
     facility: "Mutual Cybernetic Assurance Corp",
     summary: "Sovereign cryptographic health risk assurance protocol policy v9.1.",
     details: "Assures coverage for genomic therapy, quantum molecular synthesis, and high-resolution synapse scans. Dynamic premium adjustment active: Premium is locked at minimum tier -40% in reward for the patient sharing fully anonymized continuous vitals streams.",
