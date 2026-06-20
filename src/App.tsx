@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import SovereignNode3D from "./components/SovereignNode3D";
 import SovereignVault from "./components/SovereignVault";
 import BiometricsHub from "./components/BiometricsHub";
+import PharmacistCoherence from "./components/PharmacistCoherence";
+import AdminCoherence from "./components/AdminCoherence";
 import SovereignIdentity from "./components/SovereignIdentity";
 import ConsentManager from "./components/ConsentManager";
 import DiagnosticLedger from "./components/DiagnosticLedger";
@@ -252,23 +254,29 @@ export default function App() {
 
         {/* Dynamic Module Rendering based on Tab State / Role Protection */}
         <div className="grid grid-cols-1 gap-6">
-          {/* Node Coherence Vitals Tab - Role Protected: PATIENT, DOCTOR, PHARMACIST, ADMIN */}
+          {/* Node Coherence Vitals Tab - Role Protected Modules */}
           {activeTab === "vitals" && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              <div className="lg:col-span-7 flex flex-col gap-6">
-                <SovereignNode3D
-                  neuralHz={liveVitals.neuralCoherence}
-                  heartRate={liveVitals.heartRate}
-                />
-                <SovereignVault />
-              </div>
-              <div className="lg:col-span-5 flex flex-col gap-6">
-                <BiometricsHub
-                  currentVitals={liveVitals}
-                  healthScore={credentials ? credentials.healthScore : 88}
-                />
-              </div>
-            </div>
+            <>
+              {(userRole === "PATIENT" || userRole === "DOCTOR") && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  <div className="lg:col-span-7 flex flex-col gap-6">
+                    <SovereignNode3D
+                      neuralHz={liveVitals.neuralCoherence}
+                      heartRate={liveVitals.heartRate}
+                    />
+                    <SovereignVault />
+                  </div>
+                  <div className="lg:col-span-5 flex flex-col gap-6">
+                    <BiometricsHub
+                      currentVitals={liveVitals}
+                      healthScore={credentials ? credentials.healthScore : 88}
+                    />
+                  </div>
+                </div>
+              )}
+              {userRole === "PHARMACIST" && <PharmacistCoherence />}
+              {userRole === "ADMIN" && <AdminCoherence />}
+            </>
           )}
 
           {/* Sovereign Identity Tab - Role Protected: PATIENT */}
