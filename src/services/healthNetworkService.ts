@@ -134,6 +134,9 @@ const INITIAL_TXS: BlockTransaction[] = [
   }
 ];
 
+import { auth, db, OperationType, handleFirestoreError } from "./firebase";
+import { doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+
 export class HealthNetworkService {
   private credential = { ...INITIAL_CREDENTIALS };
   private records = [...INITIAL_RECORDS];
@@ -151,12 +154,32 @@ export class HealthNetworkService {
   }
 
   async getCredentials(): Promise<SovereignCredential> {
-    await this.delay(500);
+    await this.delay(300);
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const snap = await getDoc(doc(db, "credentials", user.uid));
+        if (snap.exists()) {
+          const remoteCred = snap.data();
+          this.credential = {
+            did: remoteCred.did || this.credential.did,
+            publicKey: remoteCred.publicKey || this.credential.publicKey,
+            privateKeyWIF: remoteCred.privateKeyWIF || this.credential.privateKeyWIF,
+            signingAlgorithm: remoteCred.signingAlgorithm || this.credential.signingAlgorithm,
+            authStatus: remoteCred.authStatus || this.credential.authStatus,
+            healthScore: remoteCred.healthScore !== undefined ? remoteCred.healthScore : this.credential.healthScore,
+            vtxCredits: remoteCred.vtxCredits !== undefined ? remoteCred.vtxCredits : this.credential.vtxCredits
+          };
+        }
+      } catch (err) {
+        console.error("Failed to load credentials from Firestore", err);
+      }
+    }
     return { ...this.credential };
   }
 
   async rotateSovereignKeys(): Promise<SovereignCredential> {
-    await this.delay(1200); // cryptographic signing delay
+    await this.delay(1000); // cryptographic signing delay
     const hex = "0123456789abcdef";
     let newPK = "04:";
     for (let i = 0; i < 15; i++) {
@@ -166,104 +189,212 @@ export class HealthNetworkService {
     
     let newPrv = "vx_prv_key_";
     for (let i = 0; i < 48; i++) {
-      newPrv += hex[Math.floor(Math.random() * 16)];
+       newPrv += hex[Math.floor(Math.random() * 16)];
     }
 
     this.credential.publicKey = newPK;
     this.credential.privateKeyWIF = newPrv;
     this.credential.authStatus = "VERIFIED";
     
-    // Add transaction log
     this.currentBlockHeight += 1;
-    this.transactions.unshift({
+    const newTx: BlockTransaction = {
       id: `tx-${Math.floor(Math.random() * 10000)}`,
       blockHeight: this.currentBlockHeight,
       timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
       actionType: "KEY_ROTATION",
       txHash: "0x" + Array.from({length: 16}, () => hex[Math.floor(Math.random() * 16)]).join(""),
-      gasTokens: 0.012
-    });
+      gasTokens: 0.012,
+      userId: auth.currentUser?.uid || "mock"
+    };
+    
+    this.transactions.unshift(newTx);
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await updateDoc(doc(db, "credentials", user.uid), {
+          publicKey: newPK,
+          privateKeyWIF: newPrv,
+          authStatus: "VERIFIED"
+        });
+        await setDoc(doc(db, "transactions", newTx.id), newTx);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `credentials/${user.uid}`);
+      }
+    }
 
     return { ...this.credential };
   }
 
   async getDiagnosticLogs(): Promise<MedicalDiagnosticRecord[]> {
-    await this.delay(600);
+    await this.delay(400);
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        // Query user's logs
+        const q = query(collection(db, "records"), where("userId", "==", user.uid));
+        const snap = await getDocs(q);
+        const list: MedicalDiagnosticRecord[] = [];
+        snap.forEach((doc) => {
+          list.push(doc.data() as MedicalDiagnosticRecord);
+        });
+        if (list.length > 0) {
+          this.records = list;
+        }
+      } catch (err) {
+        console.error("Failed to load records from Firestore", err);
+      }
+    }
     return [...this.records];
   }
 
   async encryptDiagnosticLog(id: string): Promise<boolean> {
-    await this.delay(800);
+    await this.delay(600);
     const index = this.records.findIndex((r) => r.id === id);
     if (index !== -1) {
       this.records[index].isEncrypted = true;
-      this.records[index].decryptionKeyId = `key-sec-${Math.floor(Math.random() * 90) + 10}`;
+      const keyId = `key-sec-${Math.floor(Math.random() * 90) + 10}`;
+      this.records[index].decryptionKeyId = keyId;
       
-      // Add transaction log
       this.currentBlockHeight += 1;
-      this.transactions.unshift({
+      const newTx: BlockTransaction = {
         id: `tx-${Math.floor(Math.random() * 10000)}`,
         blockHeight: this.currentBlockHeight,
         timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
         actionType: "DATA_ENCRYPT",
         txHash: "0x" + Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join(""),
-        gasTokens: 0.015
-      });
+        gasTokens: 0.015,
+        userId: auth.currentUser?.uid || "mock"
+      };
+      
+      this.transactions.unshift(newTx);
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await updateDoc(doc(db, "records", id), {
+            isEncrypted: true,
+            decryptionKeyId: keyId
+          });
+          await setDoc(doc(db, "transactions", newTx.id), newTx);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, `records/${id}`);
+        }
+      }
       return true;
     }
     return false;
   }
 
   async decryptDiagnosticLog(id: string): Promise<boolean> {
-    await this.delay(850); // cryptographic decryption validation
+    await this.delay(600);
     const index = this.records.findIndex((r) => r.id === id);
     if (index !== -1) {
       this.records[index].isEncrypted = false;
       this.records[index].decryptionKeyId = undefined;
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await updateDoc(doc(db, "records", id), {
+            isEncrypted: false,
+            decryptionKeyId: null
+          });
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, `records/${id}`);
+        }
+      }
       return true;
     }
     return false;
   }
 
   async getConsents(): Promise<ConsentPermission[]> {
-    await this.delay(400);
+    await this.delay(300);
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const q = query(collection(db, "consents"), where("userId", "==", user.uid));
+        const snap = await getDocs(q);
+        const list: ConsentPermission[] = [];
+        snap.forEach((doc) => {
+          list.push(doc.data() as ConsentPermission);
+        });
+        if (list.length > 0) {
+          this.consents = list;
+        }
+      } catch (err) {
+        console.error("Failed to load consents from Firestore", err);
+      }
+    }
     return [...this.consents];
   }
 
   async updateConsentScope(id: string, newScope: ConsentPermission["scope"]): Promise<ConsentPermission[]> {
-    await this.delay(700);
+    await this.delay(500);
     const index = this.consents.findIndex((c) => c.id === id);
     if (index !== -1) {
-      const oldScope = this.consents[index].scope;
       this.consents[index].scope = newScope;
       this.consents[index].isSessionTokenActive = newScope !== "REVOKED";
       
-      // Update staking credit generation based on scope
-      if (newScope === "FULL_OMNI_ACCESS") this.consents[index].vtxStakingReward = 0.22;
-      else if (newScope === "ANONYMIZED_AGGREGATE") this.consents[index].vtxStakingReward = 0.15;
-      else if (newScope === "NEURAL_ONLY") this.consents[index].vtxStakingReward = 0.08;
-      else this.consents[index].vtxStakingReward = 0.0;
+      let reward = 0.0;
+      if (newScope === "FULL_OMNI_ACCESS") reward = 0.22;
+      else if (newScope === "ANONYMIZED_AGGREGATE") reward = 0.15;
+      else if (newScope === "NEURAL_ONLY") reward = 0.08;
 
-      // Add transaction log
+      this.consents[index].vtxStakingReward = reward;
+      
       this.currentBlockHeight += 1;
-      this.transactions.unshift({
+      const newTx: BlockTransaction = {
         id: `tx-${Math.floor(Math.random() * 10000)}`,
         blockHeight: this.currentBlockHeight,
         timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
         actionType: newScope === "REVOKED" ? "CONSENT_REVOKE" : "CONSENT_GRANT",
         txHash: "0x" + Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join(""),
-        gasTokens: 0.011
-      });
+        gasTokens: 0.011,
+        userId: auth.currentUser?.uid || "mock"
+      };
+      
+      this.transactions.unshift(newTx);
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await updateDoc(doc(db, "consents", id), {
+            scope: newScope,
+            isSessionTokenActive: newScope !== "REVOKED",
+            vtxStakingReward: reward
+          });
+          await setDoc(doc(db, "transactions", newTx.id), newTx);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, `consents/${id}`);
+        }
+      }
     }
     return [...this.consents];
   }
 
   async getTransactions(): Promise<BlockTransaction[]> {
-    await this.delay(500);
+    await this.delay(300);
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const q = query(collection(db, "transactions"), where("userId", "==", user.uid));
+        const snap = await getDocs(q);
+        const list: BlockTransaction[] = [];
+        snap.forEach((doc) => {
+          list.push(doc.data() as BlockTransaction);
+        });
+        if (list.length > 0) {
+          this.transactions = list;
+        }
+      } catch (err) {
+        console.error("Failed to load transactions from Firestore", err);
+      }
+    }
     return [...this.transactions];
   }
 
-  // Live real-time biometric feed streamer simulation
   startLiveBiometrics(callback: (stream: BiometricStream, healthScore: number, vtxCredits: number) => void): void {
     if (this.activeTimer) clearInterval(this.activeTimer);
 
@@ -271,9 +402,7 @@ export class HealthNetworkService {
     let baseGlucose = 96;
     let baseBrainwaves = 40.2; // gamma Hz
     
-    // Periodically pulse streaming biometric data
-    this.activeTimer = setInterval(() => {
-      // Small randomized fluctuate within healthy ranges
+    this.activeTimer = setInterval(async () => {
       const heartRate = Math.floor(66 + Math.sin(Date.now() / 10000) * 8 + Math.random() * 4);
       const bloodOxygen = Math.min(100, Math.max(95, baseSpO2 + (Math.random() > 0.8 ? (Math.random() > 0.5 ? 1 : -1) : 0)));
       const bloodGlucose = Math.floor(baseGlucose + Math.cos(Date.now() / 25000) * 12 + Math.random() * 3);
@@ -281,19 +410,29 @@ export class HealthNetworkService {
       const bodyTemp = +(36.6 + Math.sin(Date.now() / 15000) * 0.2 + Math.random() * 0.05).toFixed(2);
       const respiratoryRate = Math.floor(12 + Math.cos(Date.now() / 8000) * 2 + Math.random());
 
-      // Slow dynamic increase to VTX Staking token based on active sharing nodes
       const activeShares = this.consents.filter(c => c.isSessionTokenActive && c.scope !== "REVOKED");
       const rewardRate = activeShares.reduce((acc, curr) => acc + curr.vtxStakingReward, 0);
       
       this.credential.vtxCredits = +(this.credential.vtxCredits + (rewardRate / 60)).toFixed(4);
       
-      // Calculate active health score dynamically based on biometric harmony
       const hrDeviation = Math.abs(heartRate - 70) / 70;
       const spo2Diff = (100 - bloodOxygen) * 2;
       const glucDeviation = Math.abs(bloodGlucose - 95) / 95;
       const ncHarmonic = Math.abs(neuralCoherence - 40) / 40;
       const dynamicScore = Math.floor(96 - (hrDeviation * 15 + spo2Diff * 2 + glucDeviation * 10 + ncHarmonic * 5));
       this.credential.healthScore = Math.min(100, Math.max(60, dynamicScore));
+
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          await updateDoc(doc(db, "credentials", user.uid), {
+            healthScore: this.credential.healthScore,
+            vtxCredits: this.credential.vtxCredits
+          });
+        } catch (err) {
+          // Silent catch on rapid tick updates
+        }
+      }
 
       callback({
         timestamp: new Date().toLocaleTimeString(),
@@ -314,21 +453,34 @@ export class HealthNetworkService {
     }
   }
 
-  // Simulate injecting a new simulated healthcare event
   async claimAirdropToken(): Promise<SovereignCredential> {
-    await this.delay(1000);
+    await this.delay(800);
     this.credential.vtxCredits += 50.0;
     
-    // Add ledger transaction
     this.currentBlockHeight += 1;
-    this.transactions.unshift({
+    const newTx: BlockTransaction = {
       id: `tx-${Math.floor(Math.random() * 10000)}`,
       blockHeight: this.currentBlockHeight,
       timestamp: new Date().toISOString().replace("T", " ").substring(0, 19),
       actionType: "REWARD_CLAIMS",
       txHash: "0x" + Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join(""),
-      gasTokens: 0.0
-    });
+      gasTokens: 0.0,
+      userId: auth.currentUser?.uid || "mock"
+    };
+    
+    this.transactions.unshift(newTx);
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        await updateDoc(doc(db, "credentials", user.uid), {
+          vtxCredits: this.credential.vtxCredits
+        });
+        await setDoc(doc(db, "transactions", newTx.id), newTx);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `credentials/${user.uid}`);
+      }
+    }
     
     return { ...this.credential };
   }

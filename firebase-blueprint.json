@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Sovereign identity user account profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["PATIENT", "DOCTOR", "PHARMACIST", "ADMIN"] },
+        "did": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role", "did"]
+    },
+    "Credential": {
+      "title": "Credential",
+      "description": "Sovereign cryptographic keys and network parameters",
+      "type": "object",
+      "properties": {
+        "did": { "type": "string" },
+        "publicKey": { "type": "string" },
+        "privateKeyWIF": { "type": "string" },
+        "signingAlgorithm": { "type": "string" },
+        "authStatus": { "type": "string" },
+        "healthScore": { "type": "number" },
+        "vtxCredits": { "type": "number" }
+      },
+      "required": ["did", "publicKey", "privateKeyWIF", "signingAlgorithm"]
+    },
+    "Record": {
+      "title": "Record",
+      "description": "Medical and genomic diagnostic records synced over ledger blocks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "originNode": { "type": "string" },
+        "category": { "type": "string" },
+        "diagnosticSummary": { "type": "string" },
+        "clinicalNarrative": { "type": "string" },
+        "severity": { "type": "string" },
+        "isEncrypted": { "type": "boolean" },
+        "decryptionKeyId": { "type": "string" },
+        "integrityHash": { "type": "string" },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "timestamp", "category", "diagnosticSummary", "severity", "isEncrypted", "userId"]
+    },
+    "Consent": {
+      "title": "Consent",
+      "description": "Active permissions for third-party medical data sharing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "entityName": { "type": "string" },
+        "entityType": { "type": "string" },
+        "scope": { "type": "string" },
+        "expiresAt": { "type": "string" },
+        "isSessionTokenActive": { "type": "boolean" },
+        "vtxStakingReward": { "type": "number" },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "entityName", "entityType", "scope", "isSessionTokenActive", "userId"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Decentralized blockchain audits of sovereign access reviews",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "blockHeight": { "type": "number" },
+        "timestamp": { "type": "string" },
+        "actionType": { "type": "string" },
+        "txHash": { "type": "string" },
+        "gasTokens": { "type": "number" },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "blockHeight", "timestamp", "actionType", "txHash", "userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Active user profiles including assigned workspace authentication context"
+    },
+    "/credentials/{userId}": {
+      "schema": "Credential",
+      "description": "Sovereign keys and profile indicators linked per user account"
+    },
+    "/records/{recordId}": {
+      "schema": "Record",
+      "description": "Clinical genomic diagnostic blockchain integrity streams"
+    },
+    "/consents/{consentId}": {
+      "schema": "Consent",
+      "description": "Active consent policy grants mapped to patient ledger nodes"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Decentralized transaction logs validating security signatures"
+    }
+  }
+}

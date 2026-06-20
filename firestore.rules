@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud_firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function getUserData(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data;
+    }
+
+    function getUserRole(userId) {
+      return getUserData(userId).role;
+    }
+
+    function hasRole(userId, role) {
+      return getUserRole(userId) == role;
+    }
+
+    // Default catch-all deny rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isSignedIn() && (request.auth.uid == userId || hasRole(request.auth.uid, "ADMIN") || hasRole(request.auth.uid, "DOCTOR"));
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId && 
+                    !request.resource.data.diff(resource.data).affectedKeys().hasAny(["role", "uid", "email"]);
+      allow delete: if false;
+    }
+
+    // Cryptographic Sovereign Credentials
+    match /credentials/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Medical Diagnostic Records
+    match /records/{recordId} {
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "DOCTOR") || 
+        hasRole(request.auth.uid, "PHARMACIST") || 
+        hasRole(request.auth.uid, "ADMIN")
+      );
+      allow create: if isSignedIn() && (
+        request.resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "DOCTOR")
+      );
+      allow update: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "DOCTOR")
+      );
+      allow delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "ADMIN")
+      );
+    }
+
+    // Patient Sharing Consent Decisions
+    match /consents/{consentId} {
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "ADMIN") ||
+        hasRole(request.auth.uid, "DOCTOR") ||
+        hasRole(request.auth.uid, "PHARMACIST")
+      );
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Ledger block transactions
+    match /transactions/{transactionId} {
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        hasRole(request.auth.uid, "ADMIN")
+      );
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

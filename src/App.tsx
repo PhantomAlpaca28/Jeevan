@@ -4,6 +4,9 @@
  */
 
 import { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "./services/firebase";
 import SovereignNode3D from "./components/SovereignNode3D";
 import SovereignVault from "./components/SovereignVault";
 import BiometricsHub from "./components/BiometricsHub";
@@ -61,9 +64,37 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [syncStatus, setSyncStatus] = useState<"CONNECTED" | "SYNCING" | "OFFLINE">("CONNECTED");
 
-  // Initial data loading sequence
+  // 1. Session listener to automatically restore login status
   useEffect(() => {
-    async function loadInitialData() {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const profile = userDoc.data();
+            setUserRole(profile.role || "PATIENT");
+            setUserDid(profile.did || `did:vitaltwin:ipns:${user.uid.substring(0, 16)}`);
+          } else {
+            setUserRole("PATIENT");
+            setUserDid(`did:vitaltwin:ipns:${user.uid.substring(0, 16)}`);
+          }
+          setIsLoggedIn(true);
+        } catch (err) {
+          console.error("Auth session restore failure", err);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Load user-specific dataset upon successful sign-in
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    async function loadUserData() {
       try {
         setSyncStatus("SYNCING");
         const cred = await healthServiceInstance.getCredentials();
@@ -75,17 +106,16 @@ export default function App() {
         setRecords(logs);
         setConsents(cnc);
         setTransactions(txs);
-        setLoading(false);
         setSyncStatus("CONNECTED");
       } catch (err) {
-        console.error("Initialization failure", err);
+        console.error("Firestore user data sync failure", err);
         setSyncStatus("OFFLINE");
       }
     }
 
-    loadInitialData();
+    loadUserData();
 
-    // Start continuous bio-telemetry socket stream simulation
+    // Start live biometrics dynamic dashboard updates
     healthServiceInstance.startLiveBiometrics((stream, healthScore, vtxCredits) => {
       setLiveVitals(stream);
       setCredentials((prev) => {
@@ -101,7 +131,7 @@ export default function App() {
     return () => {
       healthServiceInstance.stopLiveBiometrics();
     };
-  }, []);
+  }, [isLoggedIn]);
 
   // Sync / refresh manually
   const refreshLedger = async () => {
@@ -170,7 +200,12 @@ export default function App() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Sign out failure", err);
+    }
     setIsLoggedIn(false);
   };
 

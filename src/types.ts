@@ -34,6 +34,7 @@ export interface MedicalDiagnosticRecord {
   isEncrypted: boolean;
   decryptionKeyId?: string;
   integrityHash: string; // SHA-256 IPFS hash mock
+  userId?: string;
 }
 
 export interface ConsentPermission {
@@ -44,6 +45,7 @@ export interface ConsentPermission {
   expiresAt: string;
   isSessionTokenActive: boolean;
   vtxStakingReward: number; // credits rewarded to user per min. of sharing
+  userId?: string;
 }
 
 export interface BlockTransaction {
@@ -53,4 +55,5 @@ export interface BlockTransaction {
   actionType: "KEY_ROTATION" | "CONSENT_GRANT" | "CONSENT_REVOKE" | "DATA_ENCRYPT" | "REWARD_CLAIMS";
   txHash: string;
   gasTokens: number;
+  userId?: string;
 }
