@@ -1,0 +1,180 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-neon-cyan: #00f0ff;
+  --color-neon-blue: #0088ff;
+  --color-neon-purple: #bd00ff;
+  --color-neon-green: #39ff14;
+  --color-neon-rose: #ff007f;
+  --color-cyber-dark: #020617;
+  --color-cyber-navy: #0b1329;
+  --color-cyber-deep: #030712;
+  --color-cyber-grid: #0f172a;
+  --color-cyber-border: rgba(0, 240, 255, 0.15);
+  
+  --font-sans: "Inter", "Space Grotesk", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --animate-scanline: scanline 8s linear infinite;
+  --animate-pulse-cyan: pulse-cyan 3s ease-in-out infinite;
+  --animate-glow-border: glow-border 4s linear infinite;
+  --animate-grid-shift: grid-shift 20s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes scanline {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes pulse-cyan {
+  0%, 100% {
+    opacity: 0.15;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1), inset 0 0 8px rgba(0, 240, 255, 0.05);
+  }
+  50% {
+    opacity: 0.35;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 16px rgba(0, 240, 255, 0.15);
+  }
+}
+
+@keyframes glow-border {
+  0%, 100% {
+    border-color: rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    border-color: rgba(0, 136, 255, 0.5);
+  }
+}
+
+@keyframes grid-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 40px;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Custom Cyber Healthcare UI Utilities */
+@layer utilities {
+  .cyber-gradient {
+    background: radial-gradient(circle at 50% 50%, #0b1528 0%, #030712 100%);
+  }
+  
+  .glass-panel {
+    background: rgba(3, 7, 18, 0.45);
+    backdrop-filter: blur(24px) saturate(130%);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-panel-heavy {
+    background: rgba(3, 7, 18, 0.65);
+    backdrop-filter: blur(32px) saturate(145%);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  }
+  
+  .neon-glow-cyan {
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.25), inset 0 0 10px rgba(0, 240, 255, 0.1);
+  }
+  
+  .neon-glow-blue {
+    box-shadow: 0 0 15px rgba(0, 136, 255, 0.25), inset 0 0 10px rgba(0, 136, 255, 0.1);
+  }
+  
+  .neon-glow-green {
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.25), inset 0 0 10px rgba(57, 255, 20, 0.1);
+  }
+
+  .neon-text-cyan {
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.6), 0 0 20px rgba(0, 240, 255, 0.2);
+  }
+
+  .neon-text-blue {
+    text-shadow: 0 0 8px rgba(0, 136, 255, 0.6), 0 0 20px rgba(0, 136, 255, 0.2);
+  }
+
+  .neon-text-purple {
+    text-shadow: 0 0 8px rgba(189, 0, 255, 0.6), 0 0 20px rgba(189, 0, 255, 0.2);
+  }
+
+  /* Cybernetic Grid Overlay */
+  .cyber-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+  }
+
+  .cyber-dot-grid {
+    background-size: 20px 20px;
+    background-image: radial-gradient(rgba(0, 240, 255, 0.1) 1px, transparent 1px);
+  }
+  
+  .scanlines {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scanlines::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 240, 255, 0.08) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    z-index: 10;
+    background-size: 100% 4px, 6px 100%;
+    pointer-events: none;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(3, 7, 18, 0.9);
+  border-left: 1px solid rgba(0, 240, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.2);
+  border-radius: 3px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.45);
+}
+
+/* Page body styling overriding defaults */
+body {
+  background-color: #020617;
+  color: #f1f5f9;
+  font-family: "Inter", "Space Grotesk", sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hide canvas focus outline */
+canvas {
+  outline: none;
+}

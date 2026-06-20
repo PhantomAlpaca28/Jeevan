@@ -1,0 +1,6 @@
+{
+  "name": "VORTEXA",
+  "description": "Patient-Sovereign Healthcare Intelligence Network. Secured health insights dashboard featuring real-time diagnostic synthesis, decentralized credentials, and modern interactive 3D visualizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
